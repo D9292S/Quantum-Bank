@@ -372,8 +372,9 @@ class Account(commands.Cog):
         """
         try:
             # Load background image from URL
-            background_url = "https://marcellus.in/wp-content/uploads/2019/08/Technology-for-more-than-technologys-sake-1024x614.jpg"
-            background_image = Image.open(requests.get(background_url, stream=True).raw)
+            background_path = r"images\Technology-for-more-than-technologys-sake-1024x614.jpg"
+
+            background_image = Image.open(background_path)
 
             # Resize background if necessary
             background_image = background_image.resize((600, 400))
