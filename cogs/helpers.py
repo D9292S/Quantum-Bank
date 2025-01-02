@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
-from db import get_account, create_account, update_user_branch  # Import MongoDB functions
-import asyncio
+from db import get_account, update_user_branch  # Import MongoDB functions
 
 from resources.utils import create_embed
 
