@@ -68,6 +68,7 @@ async def on_message(message):
 
 cogs_list = [
     'accounts',
+    'anime',
     'errors',
     'helpers',
     'leaderboard'
