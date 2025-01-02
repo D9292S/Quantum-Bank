@@ -147,14 +147,13 @@ class Account(commands.Cog):
                     )
                     await ctx.respond(embed=public_success_embed)
                     break 
-                else:
-                    error_embed = discord.Embed(
-                        title="Account Creation Failed",
-                        description="An error occurred while creating your account. Please try again later.",
-                        color=discord.Color.red()
-                    )
-                    await ctx.author.send(embed=error_embed)
-                    break
+                error_embed = discord.Embed(
+                    title="Account Creation Failed",
+                    description="An error occurred while creating your account. Please try again later.",
+                    color=discord.Color.red()
+                )
+                await ctx.author.send(embed=error_embed)
+                break
 
             except asyncio.TimeoutError:
                 timeout_embed = discord.Embed(
