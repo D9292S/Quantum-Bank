@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "quantum-bank"
+version = "0.1.0"
+description = ""
+authors = ["D9292S <kdeepankar40@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pymongo = "^4.10.1"
+requests = "^2.32.3"
+pillow = "^11.0.0"
+py-cord = "^2.6.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
