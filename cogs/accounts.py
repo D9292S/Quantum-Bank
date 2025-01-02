@@ -344,25 +344,32 @@ class Account(commands.Cog):
 
     @discord.slash_command(description="Check your account balance and view your passbook.")
     async def passbook(self, ctx):
-        await ctx.defer()  # Defer the response
+        """Generates and displays a passbook for the user."""
         user_id = str(ctx.author.id)
 
+        # Fetch account details from the database
         account = get_account(user_id)
+
         if not account:
-            await ctx.followup.send("You don't have an account! Use `/create_account` to open one.")
+            await ctx.respond("You don't have an account! Use `/create_account` to open one.")
             return
 
+        # Fetch transactions for the user
         transactions = get_transactions(user_id)
+
+        # Generate the passbook image
         passbook_image = self.create_passbook_image(ctx.author.name, account, transactions, ctx.author.avatar.url)
 
         if passbook_image is None:
-            await ctx.followup.send("Failed to generate your passbook. Please try again later.")
+            await ctx.respond("Failed to generate your passbook. Please try again later.")
             return
 
+        # Send the generated image as an attachment
         with io.BytesIO() as image_binary:
             passbook_image.save(image_binary, 'PNG')
-            image_binary.seek(0)
-            await ctx.followup.send(file=discord.File(fp=image_binary, filename='passbook.png'))
+            image_binary.seek(0)  # Move to the start of the BytesIO buffer
+
+            await ctx.respond(file=discord.File(fp=image_binary, filename='passbook.png'))
 
     @staticmethod
     def create_passbook_image(username, account, transactions, avatar_url):
@@ -371,8 +378,10 @@ class Account(commands.Cog):
         Returns the image object.
         """
         try:
-            # Load background image from URL
+            # Use a relative path for the background image
             background_path = "images/Technology-for-more-than-technologys-sake-1024x614.jpg"
+
+            # Load background image from local path
             background_image = Image.open(background_path)
 
             # Resize background if necessary
@@ -385,8 +394,11 @@ class Account(commands.Cog):
             draw = ImageDraw.Draw(passbook)
 
             # Load custom fonts (make sure to have .ttf files in your project directory)
-            title_font = ImageFont.truetype("arial.ttf", size=24)  # Larger font for title
-            text_font = ImageFont.truetype("arial.ttf", size=18)   # Larger font for text
+            title_font_path = "fonts/arial.ttf"  # Ensure this path is correct and accessible
+            text_font_path = "fonts/arial.ttf"    # Ensure this path is correct and accessible
+            
+            title_font = ImageFont.truetype(title_font_path, size=24)  # Larger font for title
+            text_font = ImageFont.truetype(text_font_path, size=18)   # Larger font for text
 
             # Draw title and account information with white text
             draw.text((20, 20), f"Passbook for {username}", fill='white', font=title_font)
@@ -416,6 +428,7 @@ class Account(commands.Cog):
         except Exception as e:
             print(f"Error creating passbook: {e}")
             return None
+
         
     @discord.user_command(name="Show UPI ID")
     async def get_upi_id(self, ctx, user: discord.Member):
