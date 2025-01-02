@@ -96,9 +96,9 @@ def set_upi_id(user_id):
     """
     upi_id = generate_upi_id(user_id)
     accounts_collection = db["accounts"]
-    
+
     accounts_collection.update_one({"user_id": user_id}, {"$set": {"upi_id": upi_id}})
-    
+
     return upi_id
 
 def get_leaderboard(branch_name):

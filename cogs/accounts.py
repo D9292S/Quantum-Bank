@@ -37,7 +37,7 @@ class Account(commands.Cog):
             )
             await ctx.respond(embed=embed) 
             return
-        
+
         welcome_embed = discord.Embed(
             title="Hi 👋 Welcome to the **QUANTUM BANK ⚛️**",
             description="To create an account, you need to verify your identity and residence.\n\n"
@@ -71,15 +71,15 @@ class Account(commands.Cog):
                 )
                 await ctx.respond(embed=error_embed)
                 return
-            
+
             # Wait for user's response in DM
             def check(msg):
                 return msg.author == ctx.author and isinstance(msg.channel, discord.DMChannel)
-            
+
             try:
                 dm_response = await self.bot.wait_for('message', check=check, timeout=120)  # Wait for 2 minutes
                 provided_data = dm_response.content.split()
-                
+
                 if len(provided_data) != 2:
                     invalid_format_embed = discord.Embed(
                         title="Invalid Format",
@@ -96,11 +96,11 @@ class Account(commands.Cog):
                     color=discord.Color.gold()
                 )
                 await ctx.author.send(embed=processing_embed)
-                
+
                 provided_user_id, provided_guild_id = provided_data
 
                 await asyncio.sleep(10)  # Simulate processing time
-                
+
                 # Validate KYC details
                 if provided_user_id != actual_user_id or provided_guild_id != actual_guild_id:
                     # Log failed KYC attempt
@@ -109,7 +109,7 @@ class Account(commands.Cog):
                                             guild_id=actual_guild_id,
                                             provided_guild_id=provided_guild_id,
                                             reason="KYC details mismatch")
-                    
+
                     kyc_failed_embed = discord.Embed(
                         title="KYC Verification Failed",
                         description="The provided details do not match your actual Discord User ID and Guild ID. Please try again.",
@@ -117,10 +117,10 @@ class Account(commands.Cog):
                     )
                     await ctx.author.send(embed=kyc_failed_embed) 
                     continue
-                
+
                 # Create new account if KYC is successful using create_account function
                 success = create_account(actual_user_id, actual_guild_id, username, guild_name)
-                
+
                 if success:
                     success_embed = discord.Embed(
                         title="Account Created",
@@ -170,25 +170,25 @@ class Account(commands.Cog):
 
         # Fetch account details from the database
         account = get_account(user_id)
-        
+
         if not account:
             await ctx.respond("You don't have an account! Use `!create_account` to open one.")
             return
-        
+
         # Check if UPI ID already exists
         if "upi_id" in account and account["upi_id"]:
             await ctx.respond(f"You already have a UPI ID: `{account['upi_id']}`. You cannot generate another one.")
             return
-        
+
         # Generate and set UPI ID
         upi_id = set_upi_id(user_id)
-        
+
         embed = create_embed(
             title="UPI ID Generated",
             description=f"Your new UPI ID is: `{upi_id}`\nYou can use this for transactions.",
             color=discord.Color.green()
         )
-        
+
         await ctx.respond(embed=embed)
 
 
@@ -198,22 +198,22 @@ class Account(commands.Cog):
 
         # Fetch account details from the database
         sender_account = get_account(sender_id)
-        
+
         if not sender_account:
             await ctx.respond("You don't have an account! Use `!create_account` to open one.")
             return
-        
+
         if amount <= 0:
             await ctx.respond("You must pay a positive amount.")
             return
-        
+
         if amount > sender_account['balance']:
             await ctx.respond("You do not have enough balance to make this payment.")
             return
 
         # Check if the provided UPI ID belongs to an existing user
         receiver_account = get_account(upi_id.split('@')[0])  # Assuming the format is <userID>@<bank>
-        
+
         if not receiver_account:
             await ctx.respond(f"No account found for the provided UPI ID: {upi_id}.")
             return
@@ -225,26 +225,26 @@ class Account(commands.Cog):
         async def confirm_callback(interaction):
             # Deduct amount from sender's balance
             new_sender_balance = sender_account['balance'] - amount
-            
+
             # Add amount to receiver's balance
             new_receiver_balance = receiver_account['balance'] + amount
-            
+
             # Log transaction for sender
             log_transaction(sender_id, 'send_upi_payment', amount, receiver_account['user_id'])
-            
+
             # Log transaction for receiver as well
             log_transaction(receiver_account['user_id'], 'received_upi_payment', amount, sender_id)
 
             # Update balances in the database
             update_balance(sender_id, new_sender_balance)  # Update sender's balance
             update_balance(receiver_account['user_id'], new_receiver_balance)  # Update receiver's balance
-            
+
             embed = discord.Embed(
                 title="Payment Successful",
                 description=f"You have successfully paid ${amount:.2f} using your UPI ID `{upi_id}`.",
                 color=discord.Color.green()
             )
-            
+
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
         async def decline_callback(interaction):
@@ -269,7 +269,7 @@ class Account(commands.Cog):
 
         # Fetch account details from the database
         account = get_account(user_id)
-        
+
         if not account:
             await ctx.respond("You don't have an account! Use `!create_account` to open one.")
             return
@@ -279,16 +279,16 @@ class Account(commands.Cog):
 
         # Generate the passbook image
         passbook_image = self.create_passbook_image(ctx.author.name, account, transactions, ctx.author.avatar.url)
-        
+
         if passbook_image is None:
             await ctx.respond("Failed to generate your passbook. Please try again later.")
             return
-        
+
         # Send the generated image as an attachment
         with io.BytesIO() as image_binary:
             passbook_image.save(image_binary, 'PNG')
             image_binary.seek(0)  # Move to the start of the BytesIO buffer
-            
+
             await ctx.respond(file=discord.File(fp=image_binary, filename='passbook.png'))
 
     def create_passbook_image(self, username, account, transactions, avatar_url):
@@ -321,7 +321,7 @@ class Account(commands.Cog):
 
             # Load user avatar
             avatar_image = Image.open(requests.get(avatar_url, stream=True).raw).convert("RGBA")
-            
+
             # Resize avatar if necessary
             avatar_image = avatar_image.resize((50, 50))  # Resize avatar to fit nicely on the card
 
@@ -330,15 +330,15 @@ class Account(commands.Cog):
 
             # Draw transaction history title without a background
             draw.text((20, 130), "Transaction History:", fill='white', font=text_font)
-            
+
             y_offset = 160
             for txn in transactions[:5]:  # Limit to last 5 transactions for display
                 txn_info = f"{txn['type'].capitalize()} 💵: ${txn['amount']} on {txn['timestamp']}"
                 draw.text((20, y_offset), txn_info, fill='white', font=text_font)
                 y_offset += 25
-            
+
             return passbook
-        
+
         except Exception as e:
             print(f"Error creating passbook: {e}")
             return None
