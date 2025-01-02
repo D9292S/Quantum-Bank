@@ -12,6 +12,7 @@ import io
 import requests
 
 class Account(commands.Cog):
+    
     def __init__(self, bot):
         self.bot = bot
 
