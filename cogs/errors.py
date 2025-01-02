@@ -6,6 +6,17 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 class GlobalErrorHandler(commands.Cog):
+    """
+    A cog that handles global errors for the bot.
+
+    This cog is responsible for handling errors that occur across all
+    commands in the bot. It listens for command errors and handles them
+    in a consistent manner, such as by sending an error message to the user
+    or logging the error for debugging purposes.
+
+    Attributes:
+        bot (commands.Bot): The bot instance to which this cog is attached.
+    """
     def __init__(self, bot):
         self.bot = bot
 
