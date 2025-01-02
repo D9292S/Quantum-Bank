@@ -31,26 +31,26 @@ class ConfirmBranchChange(discord.ui.View):
 class HelperCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+        
     @discord.slash_command(description="Change your branch to the current guild.")   
-    """
-    Changes the user's branch to the current guild.
-
-    This command allows a user to change their branch to the one
-    associated with the guild they are currently in. The bot updates
-    the user's branch information to reflect the guild's ID and name.
-
-    Parameters:
-        ctx (discord.ApplicationContext): The context of the interaction,
-        which includes information about the user who invoked the command
-        and the guild they are currently in.
-
-    Returns:
-        None: The function performs actions related to updating the user's
-        branch but does not return a value directly. It may send a message
-        confirming the branch change.
-    """
     async def change_branch(self, ctx):
+        """
+        Changes the user's branch to the current guild.
+
+        This command allows a user to change their branch to the one
+        associated with the guild they are currently in. The bot updates
+        the user's branch information to reflect the guild's ID and name.
+
+        Parameters:
+            ctx (discord.ApplicationContext): The context of the interaction,
+            which includes information about the user who invoked the command
+            and the guild they are currently in.
+
+        Returns:
+            None: The function performs actions related to updating the user's
+            branch but does not return a value directly. It may send a message
+            confirming the branch change.
+        """
         user_id = str(ctx.author.id)
         new_branch_id = str(ctx.guild.id)
         new_branch_name = ctx.guild.name

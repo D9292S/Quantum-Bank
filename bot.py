@@ -1,13 +1,17 @@
 import discord
 import os
 
-intents = discord.Intents.all()
+intents = discord.Intents.default()
+intents.members = True
+intents.presences = True
+intents.messages = True
+intents.guilds = True
+
 
 bot = discord.Bot(command_prefix='!', intents=intents)
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-total_members = sum(guild.member_count for guild in bot.guilds)
 
 @bot.event
 async def on_ready():
@@ -29,7 +33,9 @@ async def on_ready():
     """
     print(f'Logged in as {bot.user}')
     print(f"Connected to {len(bot.guilds)} guilds")
-    await bot.change_presence(activity=discord.Game(name=f"{os.getenv("ACTIVITY"))} | {total_members} Users)
+    total_members = sum(guild.member_count for guild in bot.guilds)
+    total_guilds = len(bot.guilds)
+    await bot.change_presence(activity=discord.Game(name=f"{os.getenv("ACTIVITY")} | {total_members} Users | {total_guilds} Guilds"))
 
 @bot.event
 async def on_message(message):
