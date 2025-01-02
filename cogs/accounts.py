@@ -73,6 +73,20 @@ class Account(commands.Cog):
 
             # Wait for user's response in DM
             def check(msg):
+                """
+                Checks if the message is sent by the command author and in a DM channel.
+
+                This function is used to filter messages based on two conditions:
+                1. The message must be sent by the same user who invoked the command.
+                2. The message must be sent in a direct message (DM) channel.
+
+                Parameters:
+                    msg (discord.Message): The message object to check.
+
+                Returns:
+                    bool: Returns True if the message is from the command author
+                    and is in a DM channel, otherwise returns False.
+                """
                 return msg.author == ctx.author and isinstance(msg.channel, discord.DMChannel)
 
             try:
