@@ -2,36 +2,15 @@ import discord
 from discord.ext import commands
 from traceback import format_exc
 import logging
-class DiscordHandler(logging.Handler):
-    def __init__(self, client, channel_id):
-        super().__init__()
-        self.client = client
-        self.channel_id = channel_id
-
-    async def emit(self, record):
-        channel = self.client.get_channel(self.channel_id)
-        if channel:
-            embed = discord.Embed(title="Bot Error", description=self.format(record), color=discord.Color.red())
-            await channel.send(embed=embed)
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.ERROR)
 
-
 class GlobalErrorHandler(commands.Cog):
-    """
-    A cog that handles global errors for the bot.
-
-    This cog is responsible for handling errors that occur across all
-    commands in the bot. It listens for command errors and handles them
-    in a consistent manner, such as by sending an error message to the user
-    or logging the error for debugging purposes.
-
-    Attributes:
-        bot (commands.Bot): The bot instance to which this cog is attached.
-    """
     def __init__(self, bot):
         self.bot = bot
+        self.debug_channel_id = 823956476887302194
+        self.owner_id = 600502738572279838  # Replace with your debug channel ID
 
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx: discord.ApplicationContext, error: discord.DiscordException):
@@ -39,15 +18,37 @@ class GlobalErrorHandler(commands.Cog):
         # Log the error to the console
         print(f"Error occurred: {error}")
 
-        # Send a user-friendly message based on the type of error
+        # Format the error message
+        error_message = f"**An exception has occurred!**\n"
+        error_message += f"**User:** {ctx.user}\n"
+        error_message += f"**Command:** /{ctx.command.qualified_name}\n"
+        error_message += f"**Error:** {str(error)}\n"
+        error_message += f"**Traceback:**\n``````"
+
+        # Send error to debug channel
+        debug_channel = self.bot.get_channel(self.debug_channel_id)
+
+        if debug_channel:
+            embed = discord.Embed(title="Bot Error", description=error_message, color=discord.Color.red())
+            await debug_channel.send(embed=embed)
+            
+        # Send error to owner's DM
+        owner = await self.bot.fetch_user(self.owner_id)
+        if owner:
+            try:
+                await owner.send(error_message)
+            except discord.errors.HTTPException:
+                print("Failed to send error message to owner's DM.")
+
+
+        # Send a user-friendly message to the user
         if isinstance(error, discord.ApplicationCommandInvokeError):
             await ctx.respond("An error occurred while processing your command. Please try again later.")
-            # Optionally, send the detailed traceback to your DMs or log it elsewhere
-            me = await self.bot.fetch_user(600502738572279838)  # Replace with your user ID
-            full_error = format_exc()
-            await me.send(f"**An exception has occurred!** (User {ctx.user} used /{ctx.command.qualified_name})\n``````{full_error}``````")
         else:
             await ctx.respond("An unexpected error occurred. Please try again later.")
+
+        # Log the error using the logger
+        logger.error(error_message)
 
 def setup(bot):
     """

@@ -2,7 +2,6 @@ import discord
 import os
 from cogs.errors import logger
 import sys
-from cogs.errors import DiscordHandler
 
 intents = discord.Intents.default()
 intents.members = True
@@ -36,10 +35,6 @@ async def on_ready():
     """
     print(f'Logged in as {bot.user}')
     print(f"Connected to {len(bot.guilds)} guilds")
-    
-    debug_channel_id = 823956476887302194  # Replace with your debug channel ID
-    handler = DiscordHandler(bot, debug_channel_id)
-    logger.addHandler(handler)
 
     total_members = sum(guild.member_count for guild in bot.guilds)
     total_guilds = len(bot.guilds)
@@ -81,18 +76,6 @@ async def on_message(message):
 
     # Log the message content
     print(f"Message from {message.author}: {message.content}")
-
-    # You can add additional logic here if needed
-def check_logs():
-    log_file_path = "bot.log"  # Replace with your bot's log file path
-    if os.path.exists(log_file_path):
-        with open(log_file_path, "r") as log_file:
-            logs = log_file.readlines()
-            return logs[-10:]  # Return the last 10 log entries
-    else:
-        return "Log file not found."
-    
-print(check_logs())
 
 cogs_list = [
     'accounts',
