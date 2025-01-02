@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 from datetime import datetime
-from db import *
+from db import get_account, create_account, set_upi_id, get_transactions, log_transaction, update_balance, log_failed_kyc_attempt
 
 from resources.utils import create_embed
 
