@@ -71,7 +71,9 @@ cogs_list = [
     'anime',
     'errors',
     'helpers',
-    'leaderboard'
+    'leaderboard',
+    'help',
+    'general'
 ]
 
 for cog in cogs_list:

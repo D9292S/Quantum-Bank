@@ -35,7 +35,7 @@ class HelpView(discord.ui.View):
 
     async def show_economy_commands(self, interaction):
         embed = discord.Embed(title="Economy Commands", color=discord.Color.green())
-        embed.add_field.Embed(name="/create_account", value="To create your bank account", inline=False)
+        embed.add_field(name="/create_account", value="To create your bank account", inline=False)
         embed.add_field(name="/passbook", value="Check your balance", inline=False)
         embed.add_field(name="/generate_upi", value="Enable transfer in your bank account.", inline=False)
         embed.add_field(name="/upi_transfer", value="To transfer money to another user account.", inline=False)
