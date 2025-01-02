@@ -26,4 +26,19 @@ class GlobalErrorHandler(commands.Cog):
             await ctx.respond("An unexpected error occurred. Please try again later.")
 
 def setup(bot):
+    """
+    Sets up the GlobalErrorHandler cog for the bot.
+
+    This function is called when the cog is loaded and is responsible
+    for adding the `GlobalErrorHandler` cog to the bot. The cog handles
+    global error events and ensures that errors are managed gracefully
+    throughout the bot's execution.
+
+    Parameters:
+        bot (discord.Bot): The bot instance to which the cog is being added.
+
+    Returns:
+        None: This function doesn't return any value; it simply adds the cog
+        to the bot for it to start processing error events.
+    """
     bot.add_cog(GlobalErrorHandler(bot))
