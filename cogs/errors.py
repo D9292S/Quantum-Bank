@@ -2,8 +2,21 @@ import discord
 from discord.ext import commands
 from traceback import format_exc
 import logging
+class DiscordHandler(logging.Handler):
+    def __init__(self, client, channel_id):
+        super().__init__()
+        self.client = client
+        self.channel_id = channel_id
 
-logging.basicConfig(level=logging.INFO)
+    async def emit(self, record):
+        channel = self.client.get_channel(self.channel_id)
+        if channel:
+            embed = discord.Embed(title="Bot Error", description=self.format(record), color=discord.Color.red())
+            await channel.send(embed=embed)
+
+logger = logging.getLogger('discord')
+logger.setLevel(logging.ERROR)
+
 
 class GlobalErrorHandler(commands.Cog):
     """

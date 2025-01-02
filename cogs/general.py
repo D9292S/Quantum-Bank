@@ -25,9 +25,9 @@ class GeneralCog(commands.Cog):
         await message.edit_original_response(content=None, embed=embed)
 
     @discord.user_command(name="User Info")
-    async def userinfo(ctx, user: discord.Member):
+    async def userinfo(self, ctx, user: discord.Member):
         embed = discord.Embed(title=f"User Info - {user}", color=user.color)
-        embed.set_thumbnail(url=user.display_avatar.url)
+        embed.set_thumbnail.set(url=user.display_avatar.url)
         embed.add_field(name="ID", value=user.id, inline=True)
         embed.add_field(name="Nickname", value=user.nick or "None", inline=True)
         embed.add_field(name="Account Created", value=discord.utils.format_dt(user.created_at, style='F'), inline=False)
