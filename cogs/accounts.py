@@ -291,7 +291,8 @@ class Account(commands.Cog):
 
             await ctx.respond(file=discord.File(fp=image_binary, filename='passbook.png'))
 
-    def create_passbook_image(self, username, account, transactions, avatar_url):
+    @staticmethod
+    def create_passbook_image(username, account, transactions, avatar_url):
         """
         Creates a decorative passbook-like image with account information and transaction history.
         Returns the image object.
