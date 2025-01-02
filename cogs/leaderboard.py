@@ -3,6 +3,16 @@ from discord.ext import commands
 from db import get_leaderboard  # Import MongoDB functions
 
 class LeaderboardCog(commands.Cog):
+    """
+    A cog responsible for managing user accounts and related functionalities.
+
+    This cog handles various account-related features such as creating an account,
+    viewing account balance, and managing user data. Commands related to the 
+    creation, retrieval, and management of user accounts are included here.
+
+    Attributes:
+        bot (commands.Bot): The bot instance to which this cog is attached.
+    """
     def __init__(self, bot):
         self.bot = bot
 
