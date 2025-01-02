@@ -372,8 +372,7 @@ class Account(commands.Cog):
         """
         try:
             # Load background image from URL
-            background_path = r"images\Technology-for-more-than-technologys-sake-1024x614.jpg"
-
+            background_path = "images/Technology-for-more-than-technologys-sake-1024x614.jpg"
             background_image = Image.open(background_path)
 
             # Resize background if necessary
