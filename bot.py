@@ -75,7 +75,7 @@ async def on_message(message):
         return
 
     # Log the message content
-    #print(f"Message from {message.author}: {message.content}")
+    ##print(f"Message from {message.author}: {message.content}")
 
 cogs_list = [
     'accounts',
