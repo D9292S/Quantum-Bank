@@ -344,32 +344,25 @@ class Account(commands.Cog):
 
     @discord.slash_command(description="Check your account balance and view your passbook.")
     async def passbook(self, ctx):
-        """Generates and displays a passbook for the user."""
+        await ctx.defer()  # Defer the response
         user_id = str(ctx.author.id)
 
-        # Fetch account details from the database
         account = get_account(user_id)
-
         if not account:
-            await ctx.respond("You don't have an account! Use `!create_account` to open one.")
+            await ctx.followup.send("You don't have an account! Use `/create_account` to open one.")
             return
 
-        # Fetch transactions for the user
         transactions = get_transactions(user_id)
-
-        # Generate the passbook image
         passbook_image = self.create_passbook_image(ctx.author.name, account, transactions, ctx.author.avatar.url)
 
         if passbook_image is None:
-            await ctx.respond("Failed to generate your passbook. Please try again later.")
+            await ctx.followup.send("Failed to generate your passbook. Please try again later.")
             return
 
-        # Send the generated image as an attachment
         with io.BytesIO() as image_binary:
             passbook_image.save(image_binary, 'PNG')
-            image_binary.seek(0)  # Move to the start of the BytesIO buffer
-
-            await ctx.respond(file=discord.File(fp=image_binary, filename='passbook.png'))
+            image_binary.seek(0)
+            await ctx.followup.send(file=discord.File(fp=image_binary, filename='passbook.png'))
 
     @staticmethod
     def create_passbook_image(username, account, transactions, avatar_url):
@@ -423,6 +416,26 @@ class Account(commands.Cog):
         except Exception as e:
             print(f"Error creating passbook: {e}")
             return None
+        
+    @discord.user_command(name="Show UPI ID")
+    async def get_upi_id(self, ctx, user: discord.Member):
+        # Fetch account details from the database
+        account = get_account(str(user.id))
+        
+        if account and 'upi_id' in account:
+            embed = discord.Embed(
+                title="UPI ID Information",
+                description=f"{user.name}'s UPI ID: `{account['upi_id']}`",
+                color=discord.Color.green()
+            )
+        else:
+            embed = discord.Embed(
+                title="UPI ID Information",
+                description=f"No UPI ID found for {user.name}",
+                color=discord.Color.red()
+            )
+        
+        await ctx.respond(embed=embed, ephemeral=True)
 
 
 
