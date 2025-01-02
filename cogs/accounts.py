@@ -14,7 +14,7 @@ import requests
 class Account(commands.Cog):  
     def __init__(self, bot):
         self.bot = bot
-        
+
     @discord.slash_command(description="Initiate KYC verification for account creation.")
     async def create_account(self, ctx):
         """
@@ -161,7 +161,7 @@ class Account(commands.Cog):
                     color=discord.Color.red()
                 )
                 await ctx.author.send(embed=timeout_embed)
-                
+
     @discord.slash_command(description="Generate a UPI ID for your account.")
     async def generate_upi(self, ctx):
         user_id = str(ctx.author.id)
@@ -188,7 +188,7 @@ class Account(commands.Cog):
         )
 
         await ctx.respond(embed=embed)
-        
+
     @discord.slash_command(description="Make a payment using your UPI ID.")
     async def upi_payment(self, ctx, upi_id: str, amount: float):
         sender_id = str(ctx.author.id)
@@ -255,7 +255,7 @@ class Account(commands.Cog):
         view.add_item(decline_button)
 
         await ctx.respond("Are you sure you want to make this payment?", view=view)
-        
+
     @discord.slash_command(description="Check your account balance and view your passbook.")
     async def passbook(self, ctx):
         """Generates and displays a passbook for the user."""
@@ -284,7 +284,7 @@ class Account(commands.Cog):
             image_binary.seek(0)  # Move to the start of the BytesIO buffer
 
             await ctx.respond(file=discord.File(fp=image_binary, filename='passbook.png'))
-            
+
     @staticmethod
     def create_passbook_image(username, account, transactions, avatar_url):
         """
