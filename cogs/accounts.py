@@ -164,6 +164,21 @@ class Account(commands.Cog):
 
     @discord.slash_command(description="Generate a UPI ID for your account.")
     async def generate_upi(self, ctx):
+        """
+        Generates a UPI ID for the user's account.
+
+        This command allows the user to generate a unique UPI ID associated
+        with their account. The UPI ID will be tied to the user's account and
+        can be used for future payment operations.
+
+        Parameters:
+            ctx (discord.ApplicationContext): The context of the interaction, 
+            which contains details about the user who invoked the command.
+
+        Returns:
+            None: The function executes actions related to generating the UPI ID
+            and sends a message to the user with their newly generated UPI ID.
+        """
         user_id = str(ctx.author.id)
 
         # Fetch account details from the database
@@ -191,6 +206,26 @@ class Account(commands.Cog):
 
     @discord.slash_command(description="Make a payment using your UPI ID.")
     async def upi_payment(self, ctx, upi_id: str, amount: float):
+        """
+        Processes a payment using the user's UPI ID.
+
+        This command allows a user to make a payment by providing their UPI ID 
+        and the amount they wish to pay. The bot processes the payment 
+        by extracting the UPI ID and amount from the user's input and 
+        performing necessary operations, such as validating the UPI ID 
+        and processing the payment.
+
+        Parameters:
+            ctx (discord.ApplicationContext): The context of the interaction, 
+            which includes information about the user who invoked the command.
+            upi_id (str): The user's UPI ID, which will be used to process the payment.
+            amount (float): The amount to be paid.
+
+        Returns:
+            None: The function executes actions related to the payment but 
+            does not return a value directly. It might send a message 
+            indicating whether the payment was successful.
+        """
         sender_id = str(ctx.author.id)
 
         # Fetch account details from the database
@@ -220,6 +255,22 @@ class Account(commands.Cog):
         decline_button = discord.ui.Button(label="Decline Payment", style=discord.ButtonStyle.red)
 
         async def confirm_callback(interaction):
+            """
+            Handles the callback for confirming a payment.
+
+            This function is invoked when the user interacts with the 'confirm' button
+            to proceed with a payment. It deducts the specified amount from the sender's
+            balance and processes the payment.
+
+            Parameters:
+                interaction (discord.Interaction): The interaction object representing
+                the user's action with the confirm button.
+
+            Actions:
+                - Deducts the specified `amount` from the sender's account balance.
+                - Assumes the existence of `sender_account` and `amount` variables.
+                - Updates the balance after deduction.
+            """
             # Deduct amount from sender's balance
             new_sender_balance = sender_account['balance'] - amount
 
@@ -245,6 +296,17 @@ class Account(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
         async def decline_callback(interaction):
+            """
+            Handles the callback for when a payment is declined.
+
+            This function is invoked when the user interacts with a button
+            that triggers a payment decline. It sends a message to the user
+            indicating that the payment has been declined.
+
+            Parameters:
+                interaction (discord.Interaction): The interaction object
+                representing the user's action with the button.
+            """
             await interaction.response.send_message("Payment has been declined.", ephemeral=True)
 
         confirm_button.callback = confirm_callback
@@ -341,4 +403,15 @@ class Account(commands.Cog):
 
 
 def setup(bot):
+    """
+    Sets up the Account cog for the bot.
+
+    This function is called when the cog is loaded, adding the `Account`
+    cog to the bot and making it ready for use. The cog contains commands
+    and functionality related to account management within the bot.
+
+    Parameters:
+        bot (commands.Bot): The instance of the bot that is being extended
+                             with the cog.
+    """
     bot.add_cog(Account(bot))
