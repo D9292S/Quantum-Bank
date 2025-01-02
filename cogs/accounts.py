@@ -12,6 +12,16 @@ import io
 import requests
 
 class Account(commands.Cog):  
+    """
+    A cog that handles user account-related functionalities.
+
+    This cog is responsible for managing and interacting with user accounts.
+    It provides commands to create accounts, view account balances, and possibly
+    handle other user-specific account actions like transactions.
+
+    Attributes:
+        bot (commands.Bot): The bot instance to which this cog is attached.
+    """
     def __init__(self, bot):
         self.bot = bot
 
