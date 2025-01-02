@@ -12,9 +12,7 @@ client = MongoClient(MONGO_URI)
 db = client.get_database('banking_bot')
 
 def create_account(user_id, guild_id, username,guild_name):
-    """
-    Create a new account in the database
-    """
+    """Create a new account in the database"""
     accounts_collection = db["accounts"]    
     existing_account = accounts_collection.find_one({"user_id": user_id})
 
@@ -32,24 +30,18 @@ def create_account(user_id, guild_id, username,guild_name):
     return True
 
 def get_account(user_id):
-    """
-    Fetches the account of the user ID.
-    """
+    """Fetches the account of the user ID."""
     accounts_collection = db["accounts"]
     return accounts_collection.find_one({"user_id": user_id})
 
 def update_balance(user_id, new_balance):
-    """
-    Updates the balance of the user ID.
-    """
+    """Updates the balance of the user ID."""
     accounts_collection = db["accounts"]
     accounts_collection.update_one({"user_id": user_id}, {"$set": {"balance": new_balance}})
 
 
 def log_failed_kyc_attempt(user_id, provided_user_id, guild_id, provided_guild_id, reason):
-    """
-    Logs failed KYC attempts in database
-    """
+    """Logs failed KYC attempts in database"""
     failed_kyc_collection = db["failed_kyc_attempts"]
     failed_kyc_collection.insert_one({
         "User_Id": user_id,
@@ -61,9 +53,7 @@ def log_failed_kyc_attempt(user_id, provided_user_id, guild_id, provided_guild_i
     })
 
 def log_transaction(user_id, txn_type, amount, receiver_id=None):
-    """
-    Logs a transaction in the database.
-    """
+    """Logs a transaction in the database."""
     transactions_collection = db["transactions"]
     transaction = {
         "user_id": user_id,
@@ -83,17 +73,13 @@ def get_transactions(user_id):
     return list(transactions_collection.find({"user_id": user_id}).sort("timestamp", -1).limit(10))
 
 def generate_upi_id(user_id):
-    """
-    Generates a unique UPI ID for the user.
-    """
+    """Generates a unique UPI ID for the user."""
     bank_name = "quantumbank"  # Replace with your bank name
     random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
     return f"{user_id}@{bank_name}.{random_suffix}"
 
 def set_upi_id(user_id):
-    """
-    Sets the UPI ID for the user in the database.
-    """
+    """Sets the UPI ID for the user in the database."""
     upi_id = generate_upi_id(user_id)
     accounts_collection = db["accounts"]
 

@@ -11,9 +11,7 @@ class GlobalErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx: discord.ApplicationContext, error: discord.DiscordException):
-        """
-        Handles errors globally for all slash commands.
-        """
+        """Handles errors globally for all slash commands."""
         # Log the error to the console
         print(f"Error occurred: {error}")
 

@@ -261,9 +261,7 @@ class Account(commands.Cog):
 
     @discord.slash_command(description="Check your account balance and view your passbook.")
     async def passbook(self, ctx):
-        """
-        Generates and displays a passbook for the user.
-        """
+        """Generates and displays a passbook for the user."""
         user_id = str(ctx.author.id)
 
         # Fetch account details from the database
