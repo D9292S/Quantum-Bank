@@ -92,6 +92,23 @@ def get_leaderboard(branch_name):
     return list(db.accounts.find({"branch_name": branch_name}).sort("balance", -1).limit(10))
 
 def update_user_branch(user_id, branch_id, branch_name):
+    """
+    Updates the branch information for a user in the database.
+
+    This function updates the `branch_id` and `branch_name` for the specified
+    user in the database. It uses the user's `user_id` to find the correct
+    record and then updates the associated branch details.
+
+    Parameters:
+        user_id (str): The unique identifier of the user whose branch information 
+                       needs to be updated.
+        branch_id (str): The ID of the new branch to be assigned to the user.
+        branch_name (str): The name of the new branch to be assigned to the user.
+
+    Returns:
+        pymongo.results.UpdateResult: The result of the update operation,
+        which provides details about the update, such as the number of modified documents.
+    """
     result = db.accounts.update_one(
         {"user_id": user_id},
         {"$set": {"branch_id": branch_id, "branch_name": branch_name}}
