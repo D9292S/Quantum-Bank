@@ -34,11 +34,11 @@ async def on_ready():
         to show the bot's connection status.
     """
     print(f'Logged in as {bot.user}')
-    print(f"Connected to {len(bot.guilds)} guilds")
+    print(f'Connected to {len(bot.guilds)} guilds')
 
     total_members = sum(guild.member_count for guild in bot.guilds)
     total_guilds = len(bot.guilds)
-    await bot.change_presence(activity=discord.Game(name=f"{os.getenv("ACTIVITY")} | {total_members} Users | {total_guilds} Guilds"))
+    await bot.change_presence(activity=discord.Game(name=f'{os.getenv("ACTIVITY")} | {total_members} Users | {total_guilds} Guilds'))
 
 @bot.event
 async def on_error(event, *args, **kwargs):
