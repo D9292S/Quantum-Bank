@@ -32,6 +32,11 @@ async def on_ready():
     """
     print(f'Logged in as {bot.user}')
     print(f'Connected to {len(bot.guilds)} guilds')
+    
+    channel_id = int(os.getenv('NOTIFICATION_CHANNEL_ID'))
+    channel = bot.get_channel(channel_id)
+    if channel:
+        await channel.send('Bot has been deployed and is now online!')
 
     total_members = sum(guild.member_count for guild in bot.guilds)
     total_guilds = len(bot.guilds)
