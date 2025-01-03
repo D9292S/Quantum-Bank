@@ -18,11 +18,11 @@ class GlobalErrorHandler(commands.Cog):
         print(f"Error occurred: {error}")
 
         # Format the error message
-        error_message = f"**An exception has occurred!**\n"
+        error_message = "**An exception has occurred!**\n"
         error_message += f"**User:** {ctx.user}\n"
         error_message += f"**Command:** /{ctx.command.qualified_name}\n"
         error_message += f"**Error:** {str(error)}\n"
-        error_message += f"**Traceback:**\n``````"
+        error_message += "**Traceback:**\n``````"
 
         # Send error to debug channel
         debug_channel = self.bot.get_channel(self.debug_channel_id)
