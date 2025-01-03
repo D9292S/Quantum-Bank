@@ -3,11 +3,7 @@ import os
 from cogs.errors import logger
 import sys
 
-intents = discord.Intents.default()
-intents.members = True
-intents.presences = True
-intents.messages = True
-intents.guilds = True
+intents = discord.Intents.all()
 
 
 bot = discord.Bot(command_prefix='!', intents=intents)
@@ -48,34 +44,6 @@ async def on_error(event, *args, **kwargs):
 @bot.event
 async def on_command_error(ctx, error):
     logger.error(f"Command error in {ctx.command}: {str(error)}")
-
-
-@bot.event
-async def on_message(message):
-    """
-    Event handler for when a message is sent in a channel.
-
-    This function is triggered whenever a message is sent in any of the channels
-    that the bot has access to. It processes incoming messages and ensures that
-    the bot does not respond to its own messages.
-
-    Actions:
-        - Checks if the message was sent by the bot itself.
-        - If the message is from the bot, it returns early without processing further.
-
-    Parameters:
-        message (discord.Message): The message object that was sent in the channel.
-
-    Returns:
-        None: This function does not return a value, but it may interact with the message
-        (e.g., by sending a response) depending on further processing logic.
-    """
-    # Avoid responding to the bot's own messages
-    if message.author == bot.user:
-        return
-
-    # Log the message content
-    ##print(f"Message from {message.author}: {message.content}")
 
 cogs_list = [
     'accounts',
