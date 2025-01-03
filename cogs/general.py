@@ -2,8 +2,6 @@ import discord
 from discord.ext import commands
 import time
 import platform
-
-from discord import Option
 import asyncio
 
 from db import toggle_command, get_command_status

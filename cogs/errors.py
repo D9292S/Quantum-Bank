@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from traceback import format_exc
 import logging
 
 logger = logging.getLogger('discord')
