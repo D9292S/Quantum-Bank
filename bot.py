@@ -2,6 +2,7 @@ import discord
 import os
 from cogs.errors import logger
 import sys
+from resources.checks import is_command_enabled
 
 intents = discord.Intents.all()
 
@@ -35,6 +36,8 @@ async def on_ready():
     total_members = sum(guild.member_count for guild in bot.guilds)
     total_guilds = len(bot.guilds)
     await bot.change_presence(activity=discord.Game(name=f'{os.getenv("ACTIVITY")} | {total_members} Users | {total_guilds} Guilds'))
+    for command in bot.application_commands:
+        command.add_check(is_command_enabled())
 
 @bot.event
 async def on_error(event, *args, **kwargs):

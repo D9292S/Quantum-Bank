@@ -185,6 +185,7 @@ class Account(commands.Cog):
                     color=discord.Color.red()
                 )
                 await ctx.author.send(embed=timeout_embed)
+                break
 
     @discord.slash_command(description="Generate a UPI ID for your account.")
     async def generate_upi(self, ctx):

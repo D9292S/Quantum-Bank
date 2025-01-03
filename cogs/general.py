@@ -6,6 +6,8 @@ import platform
 from discord import Option
 import asyncio
 
+from db import toggle_command, get_command_status
+
 class GeneralCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -143,6 +145,24 @@ class GeneralCog(commands.Cog):
             del self.active_chats[user_id]
         else:
             await ctx.respond("You are not in an active chat session.", ephemeral=True)
+
+    @commands.slash_command()
+    @commands.has_permissions(administrator=True)
+    async def toggle_command(self, ctx, command_name: str):
+        try:
+            """Toggle a command on or off for this server"""
+            if command_name not in [c.name for c in self.bot.application_commands]:
+                await ctx.respond("Command not found.", ephemeral=True)
+                return
+
+            current_status = get_command_status(ctx.guild.id, command_name)
+            new_status = not current_status
+            toggle_command(ctx.guild.id, command_name, new_status)
+
+            status_str = "enabled" if new_status else "disabled"
+            await ctx.respond(f"Command '{command_name}' has been {status_str} for this server.", ephemeral=True)
+        except Exception as e:
+            await ctx.respond(f"An error occurred: {e}", ephemeral=True)
 
 
 def setup(bot):

@@ -114,3 +114,20 @@ def update_user_branch(user_id, branch_id, branch_name):
         {"$set": {"branch_id": branch_id, "branch_name": branch_name}}
     )
     return result.modified_count > 0
+
+def toggle_command(guild_id, command_name, status):
+    """Toggle a command's status for a specific guild"""
+    commands_collection = db["guild_commands"]
+    commands_collection.update_one(
+        {"guild_id": guild_id},
+        {"$set": {command_name: status}},
+        upsert=True
+    )
+
+def get_command_status(guild_id, command_name):
+    """Get the status of a command for a specific guild"""
+    commands_collection = db["guild_commands"]
+    guild_commands = commands_collection.find_one({"guild_id": guild_id})
+    return guild_commands.get(command_name, True) if guild_commands else True
+
+
