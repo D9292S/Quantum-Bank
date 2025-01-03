@@ -1,5 +1,4 @@
 import discord
-import asyncio
 
 def create_embed(title:str, description:str, color:discord.Color = discord.Color.blue()) -> discord.Embed:
     """
