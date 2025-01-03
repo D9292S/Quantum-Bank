@@ -26,14 +26,16 @@ class HelpView(discord.ui.View):
         elif select.values[0] == "Moderation":
             await self.show_moderation_commands(interaction)
 
-    async def show_general_commands(self, interaction):
+    @staticmethod
+    async def show_general_commands(interaction):
         embed = discord.Embed(title="General Commands", color=discord.Color.blue())
         embed.add_field(name="/help", value="Shows this help message", inline=False)
         embed.add_field(name="/ping", value="Check the bot's latency", inline=False)
         # Add more general commands here
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    async def show_economy_commands(self, interaction):
+    @staticmethod
+    async def show_economy_commands(interaction):
         embed = discord.Embed(title="Economy Commands", color=discord.Color.green())
         embed.add_field(name="/create_account", value="To create your bank account", inline=False)
         embed.add_field(name="/passbook", value="Check your balance", inline=False)
@@ -43,14 +45,16 @@ class HelpView(discord.ui.View):
         # Add more economy commands here
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    async def show_fun_commands(self, interaction):
+    @staticmethod
+    async def show_fun_commands(interaction):
         embed = discord.Embed(title="Fun Commands", color=discord.Color.purple())
         embed.add_field(name="/joke", value="Get a random joke", inline=False)
         embed.add_field(name="/meme", value="Get a random meme", inline=False)
         # Add more fun commands here
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    async def show_moderation_commands(self, interaction):
+    @staticmethod
+    async def show_moderation_commands(interaction):
         embed = discord.Embed(title="Moderation Commands", color=discord.Color.red())
         embed.add_field(name="/kick", value="Kick a member from the server", inline=False)
         embed.add_field(name="/ban", value="Ban a member from the server", inline=False)
