@@ -397,7 +397,7 @@ class Account(commands.Cog):
             # Load custom fonts (make sure to have .ttf files in your project directory)
             title_font_path = "fonts/arial.ttf"  # Ensure this path is correct and accessible
             text_font_path = "fonts/arial.ttf"    # Ensure this path is correct and accessible
-            
+
             title_font = ImageFont.truetype(title_font_path, size=24)  # Larger font for title
             text_font = ImageFont.truetype(text_font_path, size=18)   # Larger font for text
 
@@ -430,12 +430,12 @@ class Account(commands.Cog):
             print(f"Error creating passbook: {e}")
             return None
 
-        
+
     @discord.user_command(name="Show UPI ID")
     async def get_upi_id(self, ctx, user: discord.Member):
         # Fetch account details from the database
         account = get_account(str(user.id))
-        
+
         if account and 'upi_id' in account:
             embed = discord.Embed(
                 title="UPI ID Information",
@@ -448,7 +448,7 @@ class Account(commands.Cog):
                 description=f"No UPI ID found for {user.name}",
                 color=discord.Color.red()
             )
-        
+
         await ctx.respond(embed=embed, ephemeral=True)
 
 

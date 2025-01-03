@@ -32,7 +32,7 @@ async def on_ready():
     """
     print(f'Logged in as {bot.user}')
     print(f'Connected to {len(bot.guilds)} guilds')
-    
+
     channel_id = int(os.getenv('NOTIFICATION_CHANNEL_ID'))
     channel = bot.get_channel(channel_id)
     if channel:

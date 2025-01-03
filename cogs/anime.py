@@ -43,7 +43,7 @@ class AnimeView(discord.ui.View):
 class Anime(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     @discord.slash_command(description="Search for anime information")
     async def anime(self, ctx, name: str):
         await ctx.defer()
@@ -57,7 +57,7 @@ class Anime(commands.Cog):
 
         anime_data = x["data"][0]
         y = anime_data["attributes"]
-        
+
         embed = discord.Embed(title=y["titles"]["en_jp"], description=y["synopsis"], colour=ctx.author.colour)
         embed.set_thumbnail(url=y["posterImage"]["large"])
         embed.add_field(name="Status", value=y["status"])

@@ -31,7 +31,7 @@ class GlobalErrorHandler(commands.Cog):
         if debug_channel:
             embed = discord.Embed(title="Bot Error", description=error_message, color=discord.Color.red())
             await debug_channel.send(embed=embed)
-            
+
         # Send error to owner's DM
         owner = await self.bot.fetch_user(self.owner_id)
         if owner:
