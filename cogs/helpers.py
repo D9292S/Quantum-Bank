@@ -31,7 +31,7 @@ class ConfirmBranchChange(discord.ui.View):
 class HelperCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+
     @discord.slash_command(description="Change your branch to the current guild.")   
     async def change_branch(self, ctx):
         """

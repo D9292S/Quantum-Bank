@@ -19,12 +19,12 @@ class GeneralCog(commands.Cog):
     async def on_message(self, message):
         if message.author.bot:
             return
-        
+
         user_id = str(message.author.id)
         if user_id in self.active_chats and self.active_chats[user_id]['partner_id']:
             partner_id = self.active_chats[user_id]['partner_id']
             partner_channel = self.bot.get_channel(self.active_chats[partner_id]['channel_id'])
-            
+
             if partner_channel:
                 await partner_channel.send(f"**{message.author.name}:** {message.content}")
 
@@ -54,7 +54,7 @@ class GeneralCog(commands.Cog):
         embed.add_field(name="Joined Server", value=discord.utils.format_dt(user.joined_at, style='F'), inline=False)
         embed.add_field(name="Top Role", value=user.top_role.mention, inline=True)
         embed.add_field(name="Bot?", value="Yes" if user.bot else "No", inline=True)
-        
+
         roles = [role.mention for role in user.roles if role != ctx.guild.default_role]
         roles_str = ", ".join(roles) if roles else "No roles"
         embed.add_field(name="Roles", value=roles_str, inline=False)
@@ -93,7 +93,7 @@ class GeneralCog(commands.Cog):
     async def random_chat(self, ctx):
         user_id = str(ctx.author.id)
         channel_id = ctx.channel.id
-        
+
         if user_id in self.active_chats:
             await ctx.respond("You are already in an active chat. Use `/end_chat` to disconnect first.", ephemeral=True)
             return
@@ -103,16 +103,16 @@ class GeneralCog(commands.Cog):
             partner = await self.bot.fetch_user(int(partner_id))
             self.active_chats[user_id] = {'partner_id': partner_id, 'channel_id': channel_id}
             self.active_chats[partner_id]['partner_id'] = user_id
-            
+
             partner_channel = self.bot.get_channel(self.active_chats[partner_id]['channel_id'])
-            
+
             await ctx.respond(f"You've been connected with {partner.name}. Start chatting!", ephemeral=True)
             await partner_channel.send(f"{partner.name}, you've been connected with {ctx.author.name}. Start chatting!")
         else:
             self.waiting_users.append(user_id)
             self.active_chats[user_id] = {'partner_id': None, 'channel_id': channel_id}
             await ctx.respond("You've been added to the waiting list. We'll connect you when a partner is found!", ephemeral=True)
-            
+
             try:
                 await asyncio.wait_for(self.wait_for_partner(user_id), timeout=120.0)
             except asyncio.TimeoutError:
