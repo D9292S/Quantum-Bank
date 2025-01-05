@@ -1,11 +1,11 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@2.1.1  # Updated to latest version
+  python: circleci/python@2.1.1
   discord: antonioned/discord@0.1.0
 
 jobs:
-  build_and_test:
+  test:
     docker:
       - image: cimg/python:3.12.8
     steps:
@@ -13,38 +13,18 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
           args: poetry
-      - restore_cache:
-          keys:
-            - poetry-{{ checksum "poetry.lock" }}
-      - run:
-          name: Install project dependencies
-          command: poetry install --no-interaction --no-ansi
-      - save_cache:
-          paths:
-            - ~/.cache/pypoetry
-          key: poetry-{{ checksum "poetry.lock" }}
       - run:
           name: Run tests
           command: poetry run python -m unittest discover tests
-
-      - discord/status:
-          success_message: "Build and test succeeded!"
-          failure_message: "Build and test failed."
-          webhook: ${DISCORD_WEBHOOK}
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .
 
   deploy:
     docker:
       - image: cimg/python:3.12.8
     steps:
-      - attach_workspace:
-          at: ~/project
+      - checkout
       - python/install-packages:
           pkg-manager: pip
-          args: poetry  # Changed from 'packages' to 'args'
+          args: poetry
       - run:
           name: Install Railway CLI
           command: npm i -g @railway/cli
@@ -52,19 +32,15 @@ jobs:
           name: Deploy to Railway
           command: |
             poetry run railway up --service your-discord-bot-service
-      - discord/status:
-          success_message: "Deployment to Railway succeeded!"
-          failure_message: "Deployment to Railway failed."
-          webhook: ${DISCORD_WEBHOOK}
 
 workflows:
   version: 2
-  build_test_deploy:
+  test-and-deploy:
     jobs:
-      - build_and_test
+      - test
       - deploy:
           requires:
-            - build_and_test
+            - test
           filters:
             branches:
               only: main
