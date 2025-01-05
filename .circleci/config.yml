@@ -47,7 +47,7 @@ jobs:
           name: Deploy to Railway
           command: |
             poetry install --no-interaction --no-ansi
-            poetry run railway up --service your-discord-bot-service
+            RAILWAY_TOKEN=${RAILWAY_TOKEN} poetry run railway up --service your-discord-bot-service
 
 workflows:
   version: 2
