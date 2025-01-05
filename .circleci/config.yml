@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@2.1.1
+  discord: antonioned/discord@0.1.0
 
 jobs:
   test:
@@ -53,50 +54,19 @@ jobs:
     docker:
       - image: cimg/python:3.12.8
     steps:
-      - run:
-          name: Send Success Notification to Discord
-          command: |
-            curl -H "Content-Type: application/json" \
-                 -X POST \
-                 -d '{
-                       "embeds": [
-                         {
-                           "title": "Deployment Successful",
-                           "description": "The bot has been successfully deployed!",
-                           "fields": [
-                             { "name": "Branch", "value": "'"${CIRCLE_BRANCH}"'" },
-                             { "name": "Build Number", "value": "'"${CIRCLE_BUILD_NUM}"'" }
-                           ],
-                           "color": 3066993  # Green color for success
-                         }
-                       ]
-                     }' \
-                 ${DISCORD_WEBHOOK}
+      - discord/status:
+          fail_only: false
+          success_message: "**${CIRCLE_USERNAME}** deployed successfully! Job Number: **${CIRCLE_BUILD_NUM}**. View the job [here](${CIRCLE_BUILD_URL})"
+          webhook: "${DISCORD_WEBHOOK}"
 
   notify-failure:
     docker:
       - image: cimg/python:3.12.8
     steps:
-      - run:
-          name: Send Failure Notification to Discord
-          command: |
-            curl -H "Content-Type: application/json" \
-                 -X POST \
-                 -d '{
-                       "embeds": [
-                         {
-                           "title": "Deployment Failed",
-                           "description": "The deployment has failed.",
-                           "fields": [
-                             { "name": "Branch", "value": "'"${CIRCLE_BRANCH}"'" },
-                             { "name": "Build Number", "value": "'"${CIRCLE_BUILD_NUM}"'" },
-                             { "name": "Error", "value": "Check the logs in CircleCI for more details." }
-                           ],
-                           "color": 15158332  # Red color for failure
-                         }
-                       ]
-                     }' \
-                 ${DISCORD_WEBHOOK}
+      - discord/status:
+          fail_only: true
+          failure_message: "**${CIRCLE_USERNAME}**'s build failed! Job Number: **${CIRCLE_BUILD_NUM}**. Check the logs [here](${CIRCLE_BUILD_URL})"
+          webhook: "${DISCORD_WEBHOOK}"
 
 workflows:
   version: 2
@@ -121,3 +91,4 @@ workflows:
           filters:
             branches:
               only: main
+
