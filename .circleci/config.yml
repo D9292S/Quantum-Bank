@@ -37,7 +37,7 @@ jobs:
           args: poetry
       - run:
           name: Install Railway CLI
-          command: npm i -g @railway/cli
+          command: curl -fsSL https://railway.app/install.sh | sh
       - run:
           name: Deploy to Railway
           command: |
