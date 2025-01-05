@@ -1,35 +1,69 @@
-# This config was automatically generated from your source code
-# Stacks detected: deps:python:.,package_manager:poetry:.
 version: 2.1
+
 orbs:
-  python: circleci/python@2
+  python: circleci/python@2.0.3
+  discord: teka23/discord@0.1.0
+
 jobs:
-  test-python:
-    # Install dependencies and run tests
+  build_and_test:
     docker:
-      - image: cimg/python:3.12-node
+      - image: cimg/python:3.12.8
     steps:
       - checkout
       - python/install-packages:
-          pkg-manager: poetry
+          pkg-manager: pip
+          packages: poetry
+      - restore_cache:
+          keys:
+            - poetry-{{ checksum "poetry.lock" }}
+      - run:
+          name: Install dependencies
+          command: poetry install
+      - save_cache:
+          paths:
+            - ~/.cache/pypoetry
+          key: poetry-{{ checksum "poetry.lock" }}
       - run:
           name: Run tests
-          command: poetry run pytest --junitxml=junit.xml || ((($? == 5)) && echo 'Did not find any tests to run.')
-      - store_test_results:
-          path: junit.xml
+          command: poetry run pytest
+      - discord/status:
+          success_message: "Build and test succeeded!"
+          failure_message: "Build and test failed."
+          webhook: ${DISCORD_WEBHOOK}
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
   deploy:
-    # This is an example deploy job, not actually used by the workflow
     docker:
-      - image: cimg/base:stable
+      - image: cimg/python:3.9
     steps:
-      # Replace this with steps to deploy to users
+      - attach_workspace:
+          at: ~/project
+      - python/install-packages:
+          pkg-manager: pip
+          packages: poetry
       - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+          name: Install Railway CLI
+          command: npm i -g @railway/cli
+      - run:
+          name: Deploy to Railway
+          command: |
+            railway up --service your-discord-bot-service
+      - discord/status:
+          success_message: "Deployment to Railway succeeded!"
+          failure_message: "Deployment to Railway failed."
+          webhook: ${DISCORD_WEBHOOK}
+
 workflows:
-  build-and-test:
+  version: 2
+  build_test_deploy:
     jobs:
-      - test-python
-    # - deploy:
-    #     requires:
-    #       - test-python
+      - build_and_test
+      - deploy:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              only: main
