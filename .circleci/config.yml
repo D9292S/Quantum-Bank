@@ -12,20 +12,21 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: pip
-          args: poetry  # Changed from 'packages' to 'args'
+          args: poetry
       - restore_cache:
           keys:
             - poetry-{{ checksum "poetry.lock" }}
       - run:
           name: Install project dependencies
-          command: poetry install
+          command: poetry install --no-interaction --no-ansi
       - save_cache:
           paths:
             - ~/.cache/pypoetry
           key: poetry-{{ checksum "poetry.lock" }}
       - run:
           name: Run tests
-          command: python -m unittest discover tests
+          command: poetry run python -m unittest discover tests
+
       - discord/status:
           success_message: "Build and test succeeded!"
           failure_message: "Build and test failed."
