@@ -47,6 +47,26 @@ jobs:
       - run:
           name: Deploy to Railway
           command: RAILWAY_TOKEN=${RAILWAY_TOKEN} railway up --service considerate-celebration
+      - run:
+          name: Send Deployment Notification to Discord
+          command: |
+            curl -H "Content-Type: application/json" \
+                 -X POST \
+                 -d '{
+                       "username": "Build Bot",
+                       "embeds": [
+                         {
+                           "title": "Deployment Notification",
+                           "description": "The bot has been successfully deployed!",
+                           "fields": [
+                             { "name": "Branch", "value": "'"${CIRCLE_BRANCH}"'" },
+                             { "name": "Build Number", "value": "'"${CIRCLE_BUILD_NUM}"'" }
+                           ],
+                           "color": 3066993
+                         }
+                       ]
+                     }' \
+                 ${DISCORD_WEBHOOK}
 
 workflows:
   version: 2
