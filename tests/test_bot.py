@@ -1,9 +1,13 @@
-import asyncio
+import unittest
+from unittest.mock import AsyncMock, patch
+from bot import bot
 
-def test_ping_command(self):
-    asyncio.run(self._async_test_ping_command())
+class TestMyBot(unittest.TestCase):
+    def setUp(self):
+        self.bot = bot()
 
-async def _async_test_ping_command(self):
-    ctx = AsyncMock()
-    await self.bot.ping(ctx)
-    self.bot.send_message.assert_called_with(ctx, "Pong!")
+    @patch('discord.ext.commands.Bot.send_message')
+    async def test_ping_command(self, mock_send):
+        ctx = AsyncMock()
+        await self.bot.ping(ctx)
+        mock_send.assert_called_with(ctx, "Pong!")
