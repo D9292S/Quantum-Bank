@@ -18,7 +18,7 @@ jobs:
             - poetry-{{ checksum "poetry.lock" }}
       - run:
           name: Install project dependencies
-          command: poetry install --no-interaction --no-ansi -- no-root
+          command: poetry install --no-interaction --no-ansi --no-root
       - save_cache:
           paths:
             - ~/.cache/pypoetry
