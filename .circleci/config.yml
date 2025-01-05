@@ -25,7 +25,7 @@ jobs:
           key: poetry-{{ checksum "poetry.lock" }}
       - run:
           name: Run tests
-          command: poetry run python -m unittest tests.test_bot.TestMyBot.test_ping_command
+          command: poetry run python -m unittest discover tests
 
   deploy:
     docker:
