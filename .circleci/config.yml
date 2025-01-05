@@ -115,11 +115,9 @@ workflows:
           filters:
             branches:
               only: main
-          when: on_success # Trigger this job only if the 'deploy' job succeeds.
       - notify-failure:
           requires:
             - deploy
           filters:
             branches:
               only: main
-          when: on_fail # Trigger this job only if the 'deploy' job fails.
