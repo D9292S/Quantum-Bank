@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@2.0.3
-  discord: teka23/discord@0.1.0
+  discord: antonioned/discord@0.1.0
 
 jobs:
   build_and_test:
