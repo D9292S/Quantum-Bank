@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import AsyncMock, patch
-from bot import bot  # Import your bot class
+from bot import bot
 
 class TestMyBot(unittest.TestCase):
     def setUp(self):
