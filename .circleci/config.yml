@@ -46,23 +46,53 @@ jobs:
           command: curl -fsSL https://railway.app/install.sh | sh
       - run:
           name: Deploy to Railway
-          command: RAILWAY_TOKEN=${RAILWAY_TOKEN} railway up --service considerate-celebration
+          command: |
+            RAILWAY_TOKEN=${RAILWAY_TOKEN} railway up --service considerate-celebration
+
+  notify-success:
+    docker:
+      - image: cimg/python:3.12.8
+    steps:
       - run:
-          name: Send Deployment Notification to Discord
+          name: Send Success Notification to Discord
           command: |
             curl -H "Content-Type: application/json" \
                  -X POST \
                  -d '{
-                       "username": "Build Bot",
                        "embeds": [
                          {
-                           "title": "Deployment Notification",
+                           "title": "Deployment Successful",
                            "description": "The bot has been successfully deployed!",
                            "fields": [
                              { "name": "Branch", "value": "'"${CIRCLE_BRANCH}"'" },
                              { "name": "Build Number", "value": "'"${CIRCLE_BUILD_NUM}"'" }
                            ],
-                           "color": 3066993
+                           "color": 3066993  # Green color for success
+                         }
+                       ]
+                     }' \
+                 ${DISCORD_WEBHOOK}
+
+  notify-failure:
+    docker:
+      - image: cimg/python:3.12.8
+    steps:
+      - run:
+          name: Send Failure Notification to Discord
+          command: |
+            curl -H "Content-Type: application/json" \
+                 -X POST \
+                 -d '{
+                       "embeds": [
+                         {
+                           "title": "Deployment Failed",
+                           "description": "The deployment has failed.",
+                           "fields": [
+                             { "name": "Branch", "value": "'"${CIRCLE_BRANCH}"'" },
+                             { "name": "Build Number", "value": "'"${CIRCLE_BUILD_NUM}"'" },
+                             { "name": "Error", "value": "Check the logs in CircleCI for more details." }
+                           ],
+                           "color": 15158332  # Red color for failure
                          }
                        ]
                      }' \
@@ -79,3 +109,17 @@ workflows:
           filters:
             branches:
               only: main
+      - notify-success:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only: main
+          when: on_success # Trigger this job only if the 'deploy' job succeeds.
+      - notify-failure:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only: main
+          when: on_fail # Trigger this job only if the 'deploy' job fails.
