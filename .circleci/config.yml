@@ -25,7 +25,7 @@ jobs:
           key: poetry-{{ checksum "poetry.lock" }}
       - run:
           name: Run tests
-          command: poetry run pytest
+          command: python -m unittest discover tests
       - discord/status:
           success_message: "Build and test succeeded!"
           failure_message: "Build and test failed."
