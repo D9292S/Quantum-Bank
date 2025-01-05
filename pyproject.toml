@@ -10,6 +10,7 @@ python = "^3.12"
 pymongo = "^4.10.1"
 requests = "^2.32.3"
 pillow = "^11.0.0"
+pycord = "^0.1.1"
 
 
 [build-system]
