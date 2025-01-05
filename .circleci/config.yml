@@ -12,12 +12,12 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: pip
-          args: poetry
+          packages: poetry
       - restore_cache:
           keys:
             - poetry-{{ checksum "poetry.lock" }}
       - run:
-          name: Install dependencies
+          name: Install project dependencies
           command: poetry install
       - save_cache:
           paths:
@@ -37,7 +37,7 @@ jobs:
 
   deploy:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.12.8
     steps:
       - attach_workspace:
           at: ~/project
@@ -50,7 +50,7 @@ jobs:
       - run:
           name: Deploy to Railway
           command: |
-            railway up --service your-discord-bot-service
+            poetry run railway up --service your-discord-bot-service
       - discord/status:
           success_message: "Deployment to Railway succeeded!"
           failure_message: "Deployment to Railway failed."
