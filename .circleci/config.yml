@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@2.0.3
+  python: circleci/python@2.1.1
   discord: antonioned/discord@0.1.0
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: pip
-          packages: poetry
+          args: poetry
       - restore_cache:
           keys:
             - poetry-{{ checksum "poetry.lock" }}
