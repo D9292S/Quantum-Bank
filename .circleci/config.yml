@@ -39,7 +39,7 @@ jobs:
           name: Configure Poetry
           command: |
             poetry config virtualenvs.create false
-            poetry config experimental.new-installer false
+            poetry config installer.modern-installation false
       - run:
           name: Install Railway CLI
           command: curl -fsSL https://railway.app/install.sh | sh
