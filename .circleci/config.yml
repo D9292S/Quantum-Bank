@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   python: circleci/python@2.1.1
-  discord: antonioned/discord@0.1.0
 
 jobs:
   test:
@@ -40,13 +39,14 @@ jobs:
           command: |
             poetry config virtualenvs.create false
       - run:
+          name: Install Dependencies
+          command: poetry install --no-interaction --no-ansi --no-root
+      - run:
           name: Install Railway CLI
           command: curl -fsSL https://railway.app/install.sh | sh
       - run:
           name: Deploy to Railway
-          command: |
-            poetry install --no-interaction --no-ansi --no-root
-            RAILWAY_TOKEN=${RAILWAY_TOKEN} poetry run railway up --service considerate-celebration
+          command: RAILWAY_TOKEN=${RAILWAY_TOKEN} railway up --service considerate-celebration
 
 workflows:
   version: 2
