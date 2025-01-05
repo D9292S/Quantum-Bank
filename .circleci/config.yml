@@ -39,15 +39,14 @@ jobs:
           name: Configure Poetry
           command: |
             poetry config virtualenvs.create false
-            poetry config installer.modern-installation --unset
       - run:
           name: Install Railway CLI
           command: curl -fsSL https://railway.app/install.sh | sh
       - run:
           name: Deploy to Railway
           command: |
-            poetry install --no-interaction --no-ansi
-            RAILWAY_TOKEN=${RAILWAY_TOKEN} poetry run railway up --service your-discord-bot-service
+            poetry install --no-interaction --no-ansi --no-root
+            RAILWAY_TOKEN=${RAILWAY_TOKEN} poetry run railway up --service ${RAILWAY_SERVICE}
 
 workflows:
   version: 2
