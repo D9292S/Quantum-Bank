@@ -64,14 +64,14 @@ cogs_list = [
 ]
 
 
-if __name__ == '__main__':
-    for cog in cogs_list:
-        try:
-            bot.load_extension(f'cogs.{cog}')
-            print(f'Loaded cog: {cog}')
-        except Exception as e:
-            print(f'Failed to load cog {cog}: {e}')
-    bot.run(TOKEN)
+for cog in cogs_list:
+    try:
+        bot.load_extension(f'cogs.{cog}')
+        print(f'Loaded cog: {cog}')
+    except Exception as e:
+        print(f'Failed to load cog {cog}: {e}')
+    
+bot.run(TOKEN)
 
 
 
