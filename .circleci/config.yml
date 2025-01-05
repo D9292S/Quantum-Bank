@@ -56,7 +56,7 @@ jobs:
     steps:
       - discord/status:
           fail_only: false
-          success_message: "**${CIRCLE_USERNAME}** deployed successfully! Job Number: **${CIRCLE_BUILD_NUM}**. View the job [here](${CIRCLE_BUILD_URL})"
+          success_message: "**LΞGΞNDΔRY  ∫  DORAEMON** has been bult and deployed successfully!"
           webhook: "${DISCORD_WEBHOOK}"
 
   notify-failure:
@@ -65,7 +65,7 @@ jobs:
     steps:
       - discord/status:
           fail_only: true
-          failure_message: "**${CIRCLE_USERNAME}**'s build failed! Job Number: **${CIRCLE_BUILD_NUM}**. Check the logs [here](${CIRCLE_BUILD_URL})"
+          failure_message: "**LΞGΞNDΔRY  ∫  DORAEMON** has been bult and deployed unsuccessfully! Please Fix the Errors!"
           webhook: "${DISCORD_WEBHOOK}"
 
 workflows:
