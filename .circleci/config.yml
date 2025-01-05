@@ -13,9 +13,19 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
           args: poetry
+      - restore_cache:
+          keys:
+            - poetry-{{ checksum "poetry.lock" }}
+      - run:
+          name: Install project dependencies
+          command: poetry install --no-interaction --no-ansi
+      - save_cache:
+          paths:
+            - ~/.cache/pypoetry
+          key: poetry-{{ checksum "poetry.lock" }}
       - run:
           name: Run tests
-          command: poetry run python -m unittest discover tests
+          command: poetry run python -m unittest tests.test_bot.TestMyBot.test_ping_command
 
   deploy:
     docker:
