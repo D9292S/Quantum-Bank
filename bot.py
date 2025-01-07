@@ -70,7 +70,7 @@ for cog in cogs_list:
         print(f'Loaded cog: {cog}')
     except Exception as e:
         print(f'Failed to load cog {cog}: {e}')
-    
+
 bot.run(TOKEN)
 
 
