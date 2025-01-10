@@ -22,7 +22,7 @@ COPY pyproject.toml poetry.lock ./
 
 # Project initialization
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi --no-root --no-dev
+    && poetry install --no-interaction --no-ansi --no-root --only main
 
 # Copy project
 COPY . .
