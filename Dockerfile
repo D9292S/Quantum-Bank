@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 # Install Poetry
-ENV POETRY_VERSION=1.7.0
+ENV POETRY_VERSION=2.0.0
 ENV POETRY_HOME=/opt/poetry
 ENV PATH="$POETRY_HOME/bin:$PATH"
 RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
@@ -50,4 +50,4 @@ ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 # Install the project
 RUN pip install --no-cache-dir /app/*.whl
 
-CMD ["python", "-m", "quantum_bank"]
+CMD ["python", "bot.py"]
