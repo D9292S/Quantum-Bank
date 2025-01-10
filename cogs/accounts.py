@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 import asyncio
 from datetime import datetime
 from db import get_account, create_account, set_upi_id, get_transactions, log_transaction, update_balance, log_failed_kyc_attempt
@@ -25,17 +26,17 @@ class Account(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @discord.slash_command(description="Initiate KYC verification for account creation.")
-    async def create_account(self, ctx):
+    @app_commands.command(description="Initiate KYC verification for account creation.")
+    async def create_account(self, interaction:discord.Interaction):
         """
         Initiates KYC verification for account creation.
         The user will be prompted to provide their proof of identity (Discord User ID)
         and proof of Residence (Guild ID) via private message.
         """
-        actual_user_id = str(ctx.author.id)
-        actual_guild_id = str(ctx.guild.id)
-        username = ctx.author.name
-        guild_name = ctx.guild.name
+        actual_user_id = str(interaction.user.id)
+        actual_guild_id = str(interaction.guild.id)
+        username = interaction.user.name
+        guild_name = interaction.guild.name
 
         existing_account = get_account(actual_user_id)
         if existing_account:
@@ -44,7 +45,7 @@ class Account(commands.Cog):
                 description=f"You already have an account at the **'{existing_account['branch_name']}'** branch!",
                 color=discord.Color.red()
             )
-            await ctx.respond(embed=embed) 
+            await interaction.respond(embed=embed) 
             return
 
         welcome_embed = discord.Embed(
@@ -53,7 +54,7 @@ class Account(commands.Cog):
                         "Please check your DMs for further instructions.",
             color=discord.Color.gold()  
         )
-        await ctx.respond(embed=welcome_embed)
+        await interaction.respond(embed=welcome_embed)
 
         # Wait a moment before sending DMs
         await asyncio.sleep(2)
@@ -70,7 +71,7 @@ class Account(commands.Cog):
                                 "**NOTE**: You have 2 minutes to respond.",
                     color=discord.Color.gold()
                 )
-                await ctx.author.send(embed=dm_embed)
+                await interaction.user.send(embed=dm_embed)
 
             except discord.Forbidden:
                 error_embed = discord.Embed(
@@ -78,13 +79,13 @@ class Account(commands.Cog):
                     description="I couldn't send you a DM. Please enable DMs from server members and try again.",
                     color=discord.Color.red()
                 )
-                await ctx.respond(embed=error_embed)
+                await interaction.respond(embed=error_embed)
                 return
 
             # Wait for user's response in DM
             def check(msg):
                 """
-                Checks if the message is sent by the command author and in a DM channel.
+                Checks if the message is sent by the command user and in a DM channel.
 
                 This function is used to filter messages based on two conditions:
                 1. The message must be sent by the same user who invoked the command.
@@ -94,10 +95,10 @@ class Account(commands.Cog):
                     msg (discord.Message): The message object to check.
 
                 Returns:
-                    bool: Returns True if the message is from the command author
+                    bool: Returns True if the message is from the command user
                     and is in a DM channel, otherwise returns False.
                 """
-                return msg.author == ctx.author and isinstance(msg.channel, discord.DMChannel)
+                return msg.author == interaction.user and isinstance(msg.channel, discord.DMChannel)
 
             try:
                 dm_response = await self.bot.wait_for('message', check=check, timeout=120)  # Wait for 2 minutes
@@ -109,7 +110,7 @@ class Account(commands.Cog):
                         description="Please provide your Discord User ID and Guild ID in the correct format. For example: `1234567890 1234567890`",
                         color=discord.Color.red()
                     )
-                    await ctx.author.send(embed=invalid_format_embed)
+                    await interaction.user.send(embed=invalid_format_embed)
                     continue
 
                 # Processing Your KYC details in Central Database Please wait for 10 seconds
@@ -118,7 +119,7 @@ class Account(commands.Cog):
                     description="Please wait while we verify your KYC details.",
                     color=discord.Color.gold()
                 )
-                await ctx.author.send(embed=processing_embed)
+                await interaction.user.send(embed=processing_embed)
 
                 provided_user_id, provided_guild_id = provided_data
 
@@ -138,7 +139,7 @@ class Account(commands.Cog):
                         description="The provided details do not match your actual Discord User ID and Guild ID. Please try again.",
                         color=discord.Color.red()
                     )
-                    await ctx.author.send(embed=kyc_failed_embed) 
+                    await interaction.user.send(embed=kyc_failed_embed) 
                     continue
 
                 # Create new account if KYC is successful using create_account function
@@ -150,32 +151,32 @@ class Account(commands.Cog):
                         description=f"Your account has been successfully created at the **'{guild_name}'** branch!",
                         color=discord.Color.green()
                     )
-                    await ctx.author.send(embed=success_embed)
+                    await interaction.user.send(embed=success_embed)
 
                     account_details_embed = discord.Embed(
                         title="Your Account Details",
                         description=f"**Username**: {username}\n**User ID**: {actual_user_id}\n**Branch Name**: {guild_name}\n**Branch ID**: {actual_guild_id}\n**Balance**: 0\n**Account Created At**: {datetime.now()}",
                         color=discord.Color.blue()
                         )
-                    account_details_embed.set_thumbnail(url=ctx.author.avatar.url)
+                    account_details_embed.set_thumbnail(url=interaction.user.avatar.url)
                     account_details_embed.set_footer(text="Powered By Quantum Bank ⚛️")
 
 
-                    await ctx.author.send(embed=account_details_embed)
+                    await interaction.user.send(embed=account_details_embed)
 
                     public_success_embed = discord.Embed(
                         title="Account Created",
-                        description=f"{ctx.author.name} has successfully created an account. Check your DMs for the details.",
+                        description=f"{interaction.user.name} has successfully created an account. Check your DMs for the details.",
                         color=discord.Color.green()
                     )
-                    await ctx.respond(embed=public_success_embed)
+                    await interaction.respond(embed=public_success_embed)
                     break 
                 error_embed = discord.Embed(
                     title="Account Creation Failed",
                     description="An error occurred while creating your account. Please try again later.",
                     color=discord.Color.red()
                 )
-                await ctx.author.send(embed=error_embed)
+                await interaction.user.send(embed=error_embed)
                 break
 
             except asyncio.TimeoutError:
@@ -184,11 +185,11 @@ class Account(commands.Cog):
                     description="You took too long to provide your KYC details. Please try again.",
                     color=discord.Color.red()
                 )
-                await ctx.author.send(embed=timeout_embed)
+                await interaction.user.send(embed=timeout_embed)
                 break
 
-    @discord.slash_command(description="Generate a UPI ID for your account.")
-    async def generate_upi(self, ctx):
+    @app_commands.command(description="Generate a UPI ID for your account.")
+    async def generate_upi(self, interaction):
         """
         Generates a UPI ID for the user's account.
 
@@ -197,25 +198,25 @@ class Account(commands.Cog):
         can be used for future payment operations.
 
         Parameters:
-            ctx (discord.ApplicationContext): The context of the interaction, 
+            interaction (discord.ApplicationContext): The context of the interaction, 
             which contains details about the user who invoked the command.
 
         Returns:
             None: The function executes actions related to generating the UPI ID
             and sends a message to the user with their newly generated UPI ID.
         """
-        user_id = str(ctx.author.id)
+        user_id = str(interaction.user.id)
 
         # Fetch account details from the database
         account = get_account(user_id)
 
         if not account:
-            await ctx.respond("You don't have an account! Use `!create_account` to open one.")
+            await interaction.respond("You don't have an account! Use `!create_account` to open one.")
             return
 
         # Check if UPI ID already exists
         if "upi_id" in account and account["upi_id"]:
-            await ctx.respond(f"You already have a UPI ID: `{account['upi_id']}`. You cannot generate another one.")
+            await interaction.respond(f"You already have a UPI ID: `{account['upi_id']}`. You cannot generate another one.")
             return
 
         # Generate and set UPI ID
@@ -227,10 +228,10 @@ class Account(commands.Cog):
             color=discord.Color.green()
         )
 
-        await ctx.respond(embed=embed)
+        await interaction.respond(embed=embed)
 
-    @discord.slash_command(description="Make a payment using your UPI ID.")
-    async def upi_payment(self, ctx, upi_id: str, amount: float):
+    @app_commands.command(description="Make a payment using your UPI ID.")
+    async def upi_payment(self, interaction, upi_id: str, amount: float):
         """
         Processes a payment using the user's UPI ID.
 
@@ -241,7 +242,7 @@ class Account(commands.Cog):
         and processing the payment.
 
         Parameters:
-            ctx (discord.ApplicationContext): The context of the interaction, 
+            interaction (discord.ApplicationContext): The context of the interaction, 
             which includes information about the user who invoked the command.
             upi_id (str): The user's UPI ID, which will be used to process the payment.
             amount (float): The amount to be paid.
@@ -251,28 +252,28 @@ class Account(commands.Cog):
             does not return a value directly. It might send a message 
             indicating whether the payment was successful.
         """
-        sender_id = str(ctx.author.id)
+        sender_id = str(interaction.user.id)
 
         # Fetch account details from the database
         sender_account = get_account(sender_id)
 
         if not sender_account:
-            await ctx.respond("You don't have an account! Use `!create_account` to open one.")
+            await interaction.respond("You don't have an account! Use `!create_account` to open one.")
             return
 
         if amount <= 0:
-            await ctx.respond("You must pay a positive amount.")
+            await interaction.respond("You must pay a positive amount.")
             return
 
         if amount > sender_account['balance']:
-            await ctx.respond("You do not have enough balance to make this payment.")
+            await interaction.respond("You do not have enough balance to make this payment.")
             return
 
         # Check if the provided UPI ID belongs to an existing user
         receiver_account = get_account(upi_id.split('@')[0])  # Assuming the format is <userID>@<bank>
 
         if not receiver_account:
-            await ctx.respond(f"No account found for the provided UPI ID: {upi_id}.")
+            await interaction.respond(f"No account found for the provided UPI ID: {upi_id}.")
             return
 
         # Create confirmation and decline buttons
@@ -341,28 +342,28 @@ class Account(commands.Cog):
         view.add_item(confirm_button)
         view.add_item(decline_button)
 
-        await ctx.respond("Are you sure you want to make this payment?", view=view)
+        await interaction.respond("Are you sure you want to make this payment?", view=view)
 
-    @discord.slash_command(description="Check your account balance and view your passbook.")
-    async def passbook(self, ctx):
+    @app_commands.command(description="Check your account balance and view your passbook.")
+    async def passbook(self, interaction):
         """Generates and displays a passbook for the user."""
-        user_id = str(ctx.author.id)
+        user_id = str(interaction.user.id)
 
         # Fetch account details from the database
         account = get_account(user_id)
 
         if not account:
-            await ctx.respond("You don't have an account! Use `/create_account` to open one.")
+            await interaction.respond("You don't have an account! Use `/create_account` to open one.")
             return
 
         # Fetch transactions for the user
         transactions = get_transactions(user_id)
 
         # Generate the passbook image
-        passbook_image = self.create_passbook_image(ctx.author.name, account, transactions, ctx.author.avatar.url)
+        passbook_image = self.create_passbook_image(interaction.user.name, account, transactions, interaction.user.avatar.url)
 
         if passbook_image is None:
-            await ctx.respond("Failed to generate your passbook. Please try again later.")
+            await interaction.respond("Failed to generate your passbook. Please try again later.")
             return
 
         # Send the generated image as an attachment
@@ -370,7 +371,7 @@ class Account(commands.Cog):
             passbook_image.save(image_binary, 'PNG')
             image_binary.seek(0)  # Move to the start of the BytesIO buffer
 
-            await ctx.respond(file=discord.File(fp=image_binary, filename='passbook.png'))
+            await interaction.respond(file=discord.File(fp=image_binary, filename='passbook.png'))
 
     @staticmethod
     def create_passbook_image(username, account, transactions, avatar_url):
@@ -430,9 +431,9 @@ class Account(commands.Cog):
             print(f"Error creating passbook: {e}")
             return None
 
-
+    """
     @discord.user_command(name="Show UPI ID")
-    async def get_upi_id(self, ctx, user: discord.Member):
+    async def get_upi_id(self, interaction, user: discord.Member):
         # Fetch account details from the database
         account = get_account(str(user.id))
 
@@ -449,20 +450,9 @@ class Account(commands.Cog):
                 color=discord.Color.red()
             )
 
-        await ctx.respond(embed=embed, ephemeral=True)
-
-
-
-def setup(bot):
+        await interaction.respond(embed=embed, ephemeral=True)
     """
-    Sets up the Account cog for the bot.
 
-    This function is called when the cog is loaded, adding the `Account`
-    cog to the bot and making it ready for use. The cog contains commands
-    and functionality related to account management within the bot.
 
-    Parameters:
-        bot (commands.Bot): The instance of the bot that is being extended
-                             with the cog.
-    """
-    bot.add_cog(Account(bot))
+async def setup(bot):
+    await bot.add_cog(Account(bot))

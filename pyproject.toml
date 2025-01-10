@@ -8,11 +8,20 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-pymongo = "^4.10.1"
 requests = "^2.32.3"
 pillow = "^11.0.0"
+structlog = "^24.4.0"
+uvloop = "^0.21.0"
+aioredis-lock = "^0.1.0"
+expiringdict = "^1.2.2"
+python-json-logger = "^3.2.1"
+durations-nlp = "^1.0.1"
+python-dotenv = "^1.0.1"
+coloredlogs = "^15.0.1"
+jishaku = "^2.6.0"
+pymongo = "4.9"
+motor = "^3.6.0"
 py-cord = {git = "https://github.com/Pycord-Development/pycord.git"}
-
 
 [build-system]
 requires = ["poetry-core"]
