@@ -1,1 +1,1 @@
-worker: poetry install --no-root && poetry run python bot.py
+worker: python bot.py
