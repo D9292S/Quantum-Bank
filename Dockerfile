@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 # Install Poetry
-ENV POETRY_VERSION>=1.7.0
+ENV POETRY_VERSION=1.7.0
 ENV POETRY_HOME=/opt/poetry
 ENV PATH="$POETRY_HOME/bin:$PATH"
 RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
